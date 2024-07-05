@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Complete</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center my-5">Download Complete</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="form-container p-4">
+                    <p>MP4: <a href="{{ url_for('downloads', filename=mp4_path.split('/')[-1]) }}" class="btn btn-success btn-block">{{ mp4_path.split('/')[-1] }}</a></p>
+                    <p>MP3: <a href="{{ url_for('downloads', filename=mp3_path.split('/')[-1]) }}" class="btn btn-success btn-block">{{ mp3_path.split('/')[-1] }}</a></p>
+                    <a href="/" class="btn btn-primary btn-block">Download another video</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

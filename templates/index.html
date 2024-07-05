@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}YouTube Downloader{% endblock %}
+
+{% block content %}
+<h1 class="text-center my-5">YouTube Downloader</h1>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="form-container p-4">
+            <form action="/download" method="post">
+                <div class="form-group">
+                    <label for="youtube_url">Enter YouTube URL:</label>
+                    <input type="text" id="youtube_url" name="youtube_url" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="format">Choose format:</label>
+                    <select id="format" name="format" class="form-control">
+                        <option value="mp4">MP4 (Video)</option>
+                        <option value="webm">WEBM (Video)</option>
+                        <option value="mkv">MKV (Video)</option>
+                        <option value="flv">FLV (Video)</option>
+                        <option value="mp3">MP3 (Audio)</option>
+                        <option value="aac">AAC (Audio)</option>
+                        <option value="wav">WAV (Audio)</option>
+                        <option value="m4a">M4A (Audio)</option>
+                        <option value="opus">OPUS (Audio)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Download</button>
+            </form>
+            {% if current_user.is_authenticated and current_user.username == 'admin' %}
+            <a href="{{ url_for('add_user_page') }}" class="btn btn-secondary btn-block mt-3">Admin: Add User</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
