@@ -19,17 +19,22 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => {
             // Prüfe, ob die Antwort erfolgreich ist
             if (response.ok) {
-                return response.blob(); // Wir erwarten eine Datei
+                return response.blob().then(blob => {
+                    return {
+                        filename: getFilenameFromDisposition(response.headers.get('Content-Disposition')),
+                        blob: blob
+                    };
+                });
             } else {
                 throw new Error('Download fehlgeschlagen.');
             }
         })
-        .then(blob => {
+        .then(({filename, blob}) => {
             // Erstelle einen temporären Download-Link und klicke darauf, um den Download zu starten
             const downloadUrl = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = downloadUrl;
-            a.download = ''; // Hier kannst du optional den Dateinamen setzen
+            a.download = filename || 'downloaded-file'; // Fallback zu 'downloaded-file', wenn kein Dateiname gefunden wurde
             document.body.appendChild(a);
             a.click();
             a.remove();
@@ -44,7 +49,17 @@ document.addEventListener('DOMContentLoaded', function() {
             loadingOverlay.style.display = 'none';
         });
     });
+
+    function getFilenameFromDisposition(disposition) {
+        let filename = '';
+        if (disposition && disposition.indexOf('attachment') !== -1) {
+            const match = disposition.match(/filename="(.+)"/);
+            if (match && match.length === 2) filename = match[1];
+        }
+        return filename;
+    }
 });
+
 
 document.addEventListener('DOMContentLoaded', function() {
     const legalAccordion = document.getElementById('legalAccordion');

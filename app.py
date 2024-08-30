@@ -86,7 +86,8 @@ def download():
             response.set_data(response.get_data() + b"<script>document.getElementById('loading-overlay').style.display = 'none';</script>")
             return response
 
-        return send_file(file_path, as_attachment=True)
+        return send_file(file_path, as_attachment=True, download_name=os.path.basename(file_path))
+
     else:
         logger.error("Ein Fehler ist beim Download-Prozess aufgetreten.")
         return "An error occurred during the download process."
