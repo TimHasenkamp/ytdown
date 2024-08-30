@@ -1,40 +1,118 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Downloader</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/styles.css">
+</head>
+<body>
+    <header class="navbar navbar-dark bg-dark">
+        <a href="/" class="navbar-brand">Media Downloader</a>
+    </header>
 
-{% block title %}Media Downloader{% endblock %}
-
-{% block content %}
-<h1 class="text-center my-5">Media Downloader</h1>
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="form-container p-4">
-            <form action="/download" method="post">
-                <div class="form-group">
-                    <label for="media_type">Plattform wählen:</label>
-                    <select id="media_type" name="media_type" class="form-control" required>
-                        <option value="youtube">YouTube</option>
-                    </select>
+    <div class="container mt-5">
+        <h1 class="text-center my-5">Media Downloader</h1>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="form-container p-4">
+                    <form id="download-form" action="/download" method="post">
+                        <div class="form-group">
+                            <label for="media_type">Plattform wählen:</label>
+                            <select id="media_type" name="media_type" class="form-control" required>
+                                <option value="youtube">YouTube</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="url">Link einfügen:</label>
+                            <input type="text" id="url" name="url" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="format">Format wählen:</label>
+                            <select id="format" name="format" class="form-control">
+                                <option value="mp3">MP3 (Audio)</option>
+                                <option value="mp4">MP4 (Video)</option>
+                                <!-- Weitere Formate -->
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Download</button>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <label for="url">Link einfügen:</label>
-                    <input type="text" id="url" name="url" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="format">Format wählen:</label>
-                    <select id="format" name="format" class="form-control">
-                        <option value="mp3">MP3 (Audio)</option>
-                        <option value="mp4">MP4 (Video)</option>
-                        <option value="webm">WEBM (Video)</option>
-                        <option value="mkv">MKV (Video)</option>
-                        <option value="flv">FLV (Video)</option>
-                        <option value="aac">AAC (Audio)</option>
-                        <option value="wav">WAV (Audio)</option>
-                        <option value="m4a">M4A (Audio)</option>
-                        <option value="opus">OPUS (Audio)</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Download</button>
-            </form>
+            </div>
         </div>
+
+        <!-- Ladebalken Overlay -->
+        <div id="loading-overlay" style="display:none;">
+            <div class="loading-spinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Lade...</span>
+                </div>
+                <p>Download läuft... Bitte warten</p>
+            </div>
+        </div>
+
+        <!-- Impressum und Haftungsausschluss -->
+        <div class="mt-5">
+            <div class="d-flex justify-content-center mb-3">
+                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseImpressum" aria-expanded="true" aria-controls="collapseImpressum">
+                    Impressum
+                </button>
+                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseHaftungsausschluss" aria-expanded="false" aria-controls="collapseHaftungsausschluss">
+                    Haftungsausschluss
+                </button>
+            </div>
+
+            <div class="accordion" id="legalAccordion" style="display: none;">
+                <div class="card">
+                    <div id="collapseImpressum" class="collapse" aria-labelledby="headingImpressum" data-parent="#legalAccordion">
+                        <div class="card-body">
+                            <p><strong>Angaben gemäß § 5 TMG</strong></p>
+                            <p>Tim Hasenkamp<br>
+                            Bombergstraße 8<br>
+                            36115 Hilders<br>
+                            Deutschland</p>
+                            <p>Telefon: 01703096399<br>
+                            E-Mail: web@t-hasenkamp.de</p>
+                            <p><strong>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</strong></p>
+                            <p>Tim Hasenkamp<br>
+                            Bombergstraße 8<br>
+                            36115 Hilders</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div id="collapseHaftungsausschluss" class="collapse" aria-labelledby="headingHaftungsausschluss" data-parent="#legalAccordion">
+                        <div class="card-body">
+                            <h2>Haftung für Inhalte</h2>
+                            <p>Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. 
+                            Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu 
+                            überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.</p>
+                            <h2>Haftung für Links</h2>
+                            <p>Unser Angebot enthält Links zu externen Websites Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese 
+                            fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der 
+                            Seiten verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige 
+                            Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar.</p>
+                            <h2>Urheberrecht</h2>
+                            <p>Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Beiträge Dritter 
+                            sind als solche gekennzeichnet. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des 
+                            Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers. Downloads und Kopien dieser Seite sind nur 
+                            für den privaten, nicht kommerziellen Gebrauch gestattet.</p>
+                            <h2>Haftungsausschluss für das Herunterladen von YouTube-Musik</h2>
+                            <p>Der Download von urheberrechtlich geschütztem Material, wie z.B. Musik oder Videos von YouTube, ist in vielen Ländern, einschließlich 
+                            Deutschland, nur in sehr eingeschränkten Fällen legal. Diese Webseite bietet lediglich technische Dienstleistungen an und übernimmt keine 
+                            Verantwortung für die Nutzung der angebotenen Tools durch den Nutzer.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
-</div>
-{% endblock %}
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="static/js/scripts.js"></script>
+</body>
+</html>

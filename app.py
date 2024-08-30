@@ -15,8 +15,6 @@ app = Flask(__name__)
 DOWNLOAD_FOLDER = 'downloads'
 
 
-
-
 def download_youtube_video(youtube_url, format='mp4'):
     if not os.path.exists(DOWNLOAD_FOLDER):
         os.makedirs(DOWNLOAD_FOLDER)
@@ -80,6 +78,12 @@ def download():
         @after_this_request
         def remove_file(response):
             Thread(target=delayed_file_removal, args=(file_path,)).start()
+            return response
+        
+        @after_this_request
+        def stop_loader(response):
+            response.direct_passthrough = False
+            response.set_data(response.get_data() + b"<script>document.getElementById('loading-overlay').style.display = 'none';</script>")
             return response
 
         return send_file(file_path, as_attachment=True)
