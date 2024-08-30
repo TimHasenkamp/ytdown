@@ -1,25 +1,20 @@
 /* static/css/styles.css */
 body {
     background-color: #f8f9fa;
-    margin-top: 56px; /* Platz für den Header */
 }
 
 header {
     position: fixed;
     top: 0;
     width: 100%;
-    z-index: 1030;
+    z-index: -1030;
+    background-color: #343a40;
+    padding: 15px 0; /* Padding für den Header hinzufügen */
 }
 
 h1 {
-    margin-top: 40px;
+    margin-top: 20px; /* Dieser Abstand ist nun relativ zum body padding-top */
     color: #343a40;
-}
-
-.navbar {
-    position: absolute;
-    top: 0;
-    z-index: 1000;
 }
 
 .form-container {
