@@ -12,7 +12,7 @@ services:
     networks:
       - webnet
     volumes:
-      - /app/uploads:/app/uploads  # Falls du Dateien hochlädst, kannst du Volumes nutzen
+      - ./uploads:/app/uploads  # Nutze ein lokales Verzeichnis für Uploads
 
   nginx:
     image: nginx:latest
@@ -22,9 +22,9 @@ services:
       - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf  # Nginx-Konfigurationsdatei
-      - /etc/nginx/certs:/etc/nginx/certs:ro
-      - /etc/nginx/vhost.d:/etc/nginx/vhost.d
-      - /usr/share/nginx/html
+      - ./certs:/etc/nginx/certs:ro  # Persistente Zertifikats-Volumes
+      - ./vhost.d:/etc/nginx/vhost.d
+      - ./html:/usr/share/nginx/html
     depends_on:
       - web
     networks:
@@ -35,13 +35,13 @@ services:
     restart: always
     environment:
       - NGINX_PROXY_CONTAINER=nginx
-      - LETSENCRYPT_EMAIL=youremail@example.com
-      - LETSENCRYPT_HOST=yourdomain.com
+      - LETSENCRYPT_EMAIL=webmaster@yourdomain.com  # Deine E-Mail-Adresse für Let's Encrypt
+      - LETSENCRYPT_HOST=test.hasenkamp.dev  # Deine Domain für SSL
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /etc/nginx/certs:/etc/nginx/certs:rw
-      - /etc/nginx/vhost.d:/etc/nginx/vhost.d
-      - /usr/share/nginx/html:/usr/share/nginx/html
+      - ./certs:/etc/nginx/certs:rw  # Let's Encrypt generiert hier die Zertifikate
+      - ./vhost.d:/etc/nginx/vhost.d
+      - ./html:/usr/share/nginx/html
     networks:
       - webnet
 
