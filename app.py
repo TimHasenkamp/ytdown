@@ -27,12 +27,12 @@ def download_youtube_video(youtube_url, format='mp4'):
         if format in ['mp4', 'webm', 'mkv', 'flv']:
             ydl_opts['format'] = f'bestvideo[ext={format}]+bestaudio[ext=m4a]/best[ext={format}]/best'
             ydl_opts['merge_output_format'] = format
-        elif format in ['mp3', 'aac', 'wav', 'm4a', 'opus']:
+        elif format in ['mp3', 'aac', 'wav', 'm4a']:
             ydl_opts['format'] = 'bestaudio/best'
             ydl_opts['postprocessors'] = [{
                 'key': 'FFmpegExtractAudio',
                 'preferredcodec': format,
-                'preferredquality': '192',
+                'preferredquality': '320',
             }]
 
         with YoutubeDL(ydl_opts) as ydl:
@@ -40,7 +40,7 @@ def download_youtube_video(youtube_url, format='mp4'):
             downloaded_file_path = ydl.prepare_filename(info_dict)
             if format in ['mp4', 'webm', 'mkv', 'flv']:
                 file_path = downloaded_file_path.rsplit('.', 1)[0] + f'.{format}'
-            elif format in ['mp3', 'aac', 'wav', 'm4a', 'opus']:
+            elif format in ['mp3', 'aac', 'wav', 'm4a']:
                 file_path = downloaded_file_path.rsplit('.', 1)[0] + f'.{format}'
 
         return file_path
