@@ -4,46 +4,10 @@ services:
   web:
     build: .
     restart: always
-    expose:
-      - "8000"
+    ports:
+      - "8000:8000"
     environment:
       - FLASK_APP=app.py
       - FLASK_ENV=production
-    networks:
-      - webnet
     volumes:
       - ./uploads:/app/uploads  # Nutze ein lokales Verzeichnis für Uploads
-
-  nginx:
-    image: nginx:latest
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf  # Nginx-Konfigurationsdatei
-      - ./certs:/etc/nginx/certs:ro  # Persistente Zertifikats-Volumes
-      - ./vhost.d:/etc/nginx/vhost.d
-      - ./html:/usr/share/nginx/html
-    depends_on:
-      - web
-    networks:
-      - webnet
-
-  letsencrypt:
-    image: jrcs/letsencrypt-nginx-proxy-companion
-    restart: always
-    environment:
-      - NGINX_PROXY_CONTAINER=nginx
-      - LETSENCRYPT_EMAIL=webmaster@yourdomain.com  # Deine E-Mail-Adresse für Let's Encrypt
-      - LETSENCRYPT_HOST=test.hasenkamp.dev  # Deine Domain für SSL
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./certs:/etc/nginx/certs:rw  # Let's Encrypt generiert hier die Zertifikate
-      - ./vhost.d:/etc/nginx/vhost.d
-      - ./html:/usr/share/nginx/html
-    networks:
-      - webnet
-
-networks:
-  webnet:
