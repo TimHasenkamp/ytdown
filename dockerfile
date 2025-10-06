@@ -1,5 +1,5 @@
 # Verwende ein offizielles Python-Runtime als Basis
-FROM python:3.8-slim
+FROM python:3.11-slim
 
 # Setze das Arbeitsverzeichnis in den Container
 WORKDIR /app
@@ -25,5 +25,5 @@ ENV FLASK_ENV=production
 # Exponiere den Port, auf dem die App läuft
 EXPOSE 8000
 
-# Starte die Flask-App mit Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "app:app"]
+# Starte die Flask-App mit Gunicorn (erhöhter Timeout für große Downloads)
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--timeout", "900", "--workers", "2", "app:app"]

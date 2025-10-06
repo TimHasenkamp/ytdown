@@ -1,5 +1,5 @@
-Flask
-yt-dlp
+Flask>=3.0.0
+yt-dlp>=2024.10.7
 spotdl
 spotipy
-gunicorn
+gunicorn>=21.2.0

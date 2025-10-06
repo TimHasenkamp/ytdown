@@ -15,39 +15,52 @@ app = Flask(__name__)
 DOWNLOAD_FOLDER = 'downloads'
 
 
-def download_youtube_video(youtube_url, format='mp4'):
+def download_youtube_video(youtube_url, format='mp4', max_retries=3):
     if not os.path.exists(DOWNLOAD_FOLDER):
         os.makedirs(DOWNLOAD_FOLDER)
-    
-    try:
-        ydl_opts = {
-            'outtmpl': os.path.join(DOWNLOAD_FOLDER, '%(title)s.%(ext)s')
-        }
 
-        if format in ['mp4', 'webm', 'mkv', 'flv']:
-            ydl_opts['format'] = f'bestvideo[ext={format}]+bestaudio[ext=m4a]/best[ext={format}]/best'
-            ydl_opts['merge_output_format'] = format
-        elif format in ['mp3', 'aac', 'wav', 'm4a']:
-            ydl_opts['format'] = 'bestaudio/best'
-            ydl_opts['postprocessors'] = [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': format,
-                'preferredquality': '320',
-            }]
+    for attempt in range(max_retries):
+        try:
+            ydl_opts = {
+                'outtmpl': os.path.join(DOWNLOAD_FOLDER, '%(title)s.%(ext)s'),
+                'retries': 10,
+                'fragment_retries': 10,
+                'skip_unavailable_fragments': False,
+                'ignoreerrors': False,
+                'no_warnings': False,
+                'extractor_retries': 3,
+            }
 
-        with YoutubeDL(ydl_opts) as ydl:
-            info_dict = ydl.extract_info(youtube_url, download=True)
-            downloaded_file_path = ydl.prepare_filename(info_dict)
             if format in ['mp4', 'webm', 'mkv', 'flv']:
-                file_path = downloaded_file_path.rsplit('.', 1)[0] + f'.{format}'
+                ydl_opts['format'] = f'bestvideo[ext={format}]+bestaudio[ext=m4a]/best[ext={format}]/best'
+                ydl_opts['merge_output_format'] = format
             elif format in ['mp3', 'aac', 'wav', 'm4a']:
-                file_path = downloaded_file_path.rsplit('.', 1)[0] + f'.{format}'
+                ydl_opts['format'] = 'bestaudio/best'
+                ydl_opts['postprocessors'] = [{
+                    'key': 'FFmpegExtractAudio',
+                    'preferredcodec': format,
+                    'preferredquality': '320',
+                }]
 
-        return file_path
+            with YoutubeDL(ydl_opts) as ydl:
+                info_dict = ydl.extract_info(youtube_url, download=True)
+                downloaded_file_path = ydl.prepare_filename(info_dict)
+                if format in ['mp4', 'webm', 'mkv', 'flv']:
+                    file_path = downloaded_file_path.rsplit('.', 1)[0] + f'.{format}'
+                elif format in ['mp3', 'aac', 'wav', 'm4a']:
+                    file_path = downloaded_file_path.rsplit('.', 1)[0] + f'.{format}'
 
-    except Exception as e:
-        logger.error(f"Ein Fehler ist beim YouTube-Download aufgetreten: {e}")
-        return None
+            return file_path
+
+        except Exception as e:
+            logger.error(f"Versuch {attempt + 1}/{max_retries} fehlgeschlagen: {e}")
+            if attempt < max_retries - 1:
+                wait_time = (attempt + 1) * 2
+                logger.info(f"Warte {wait_time} Sekunden vor erneutem Versuch...")
+                time.sleep(wait_time)
+            else:
+                logger.error(f"Download nach {max_retries} Versuchen fehlgeschlagen: {e}")
+                return None
 
 def delayed_file_removal(file_path):
     time.sleep(5)
